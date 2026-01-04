@@ -31,3 +31,7 @@ add env
     DB_PORT=5432
     SUPABASE_URL=your_supabase_connection_string
 
+
+
+    deployed url : https://task-ntgu.onrender.com
+
