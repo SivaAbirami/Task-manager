@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; // Import React key hooks
 import {
   Container,
   Grid,
@@ -16,7 +16,7 @@ import {
   Avatar,
   Fade,
   Grow
-} from '@mui/material';
+} from '@mui/material'; // Import Material-UI components
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -30,79 +30,92 @@ import {
   Assignment as AssignmentIcon,
   TrendingUp as TrendingUpIcon,
   Person as PersonIcon
-} from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
-import DashboardChart from '../components/DashboardChart';
-import TaskForm from '../components/TaskForm';
+} from '@mui/icons-material'; // Import Icons
+import { useDispatch, useSelector } from 'react-redux'; // Import Redux hooks
+import DashboardChart from '../components/DashboardChart'; // Import Chart component
+import TaskForm from '../components/TaskForm'; // Import Task Form component
 import {
   fetchTasks,
   fetchTaskStats,
   createTask,
   updateTask,
   deleteTask
-} from '../store/taskSlice';
-import { logout } from '../store/authSlice';
-import { useNavigate } from 'react-router-dom';
+} from '../store/taskSlice'; // Import task actions
+import { logout } from '../store/authSlice'; // Import logout action
+import { useNavigate } from 'react-router-dom'; // Import navigation hook
 
+// Dashboard Component
+// Main page where users can view and manage their tasks
 const Dashboard = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // Hook to dispatch Redux actions
+  // Select task state from Redux store
   const { tasks, stats, loading, error } = useSelector((state) => state.tasks);
+  // Select user from auth state
   const { user } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
+  // Local state for controlling the Task Form dialog
   const [openForm, setOpenForm] = useState(false);
+  // Local state for tracking which task is being edited (null if creating new)
   const [editingTask, setEditingTask] = useState(null);
 
+  // Effect to fetch tasks and statistics on component mount
   useEffect(() => {
     dispatch(fetchTasks());
     dispatch(fetchTaskStats());
   }, [dispatch]);
 
+  // Handle user logout
   const handleLogout = () => {
-    dispatch(logout());
-    navigate('/login');
+    dispatch(logout()); // Dispatch logout action
+    navigate('/login'); // Redirect to login page
   };
 
+  // Handle creating a new task
   const handleCreateTask = (taskData) => {
     dispatch(createTask(taskData))
-      .unwrap()
+      .unwrap() // Unwrap the promise to handle success/failure
       .then(() => {
-        setOpenForm(false);
-        dispatch(fetchTaskStats());
+        setOpenForm(false); // Close the form
+        dispatch(fetchTaskStats()); // Refresh stats
       })
-      .catch(console.error);
+      .catch(console.error); // Log errors
   };
 
+  // Handle updating an existing task
   const handleUpdateTask = (taskData) => {
     dispatch(updateTask({ id: editingTask.id, ...taskData }))
       .unwrap()
       .then(() => {
-        setEditingTask(null);
-        dispatch(fetchTaskStats());
+        setEditingTask(null); // Clear editing state
+        dispatch(fetchTaskStats()); // Refresh stats
       })
       .catch(console.error);
   };
 
+  // Handle deleting a task
   const handleDeleteTask = (id) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       dispatch(deleteTask(id))
         .unwrap()
         .then(() => {
-          dispatch(fetchTaskStats());
+          dispatch(fetchTaskStats()); // Refresh stats
         })
         .catch(console.error);
     }
   };
 
+  // Handle changing task status directly from the card
   const handleStatusChange = (task, newStatus) => {
     dispatch(updateTask({ id: task.id, status: newStatus }))
       .unwrap()
       .then(() => {
-        dispatch(fetchTaskStats());
+        dispatch(fetchTaskStats()); // Refresh stats
       })
       .catch(console.error);
   };
 
+  // Helper to get icon based on task status
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Todo':
@@ -116,6 +129,7 @@ const Dashboard = () => {
     }
   };
 
+  // Helper to get color string based on task status
   const getStatusColor = (status) => {
     switch (status) {
       case 'Todo':
@@ -129,6 +143,7 @@ const Dashboard = () => {
     }
   };
 
+  // Show loading spinner while fetching data
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
@@ -137,29 +152,32 @@ const Dashboard = () => {
     );
   }
 
+  // Calculate total tasks for display
   const totalTasks = (stats.Todo || 0) + (stats['In Progress'] || 0) + (stats.Completed || 0);
 
   return (
+    // Main Container with gradient background
     <Box sx={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      py: { xs: 2, md: 4 },
-      px: { xs: 1, sm: 2 }
+      py: { xs: 2, md: 4 }, // Padding Y responsive
+      px: { xs: 1, sm: 2 } // Padding X responsive
     }}>
       <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-        {/* Row 1: Header */}
+        {/* Row 1: Header Section */}
         <Fade in timeout={800}>
           <Box sx={{ mb: { xs: 2, md: 3 } }}>
             <Box sx={{
               display: 'flex',
               alignItems: 'center',
               gap: { xs: 1.5, md: 2 },
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: 'rgba(255, 255, 255, 0.95)', // Glassmorphism effect
               p: { xs: 2, sm: 3, md: 4 },
               borderRadius: 3,
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
               width: '100%'
             }}>
+              {/* User Avatar */}
               <Avatar sx={{
                 bgcolor: 'primary.main',
                 width: { xs: 48, md: 56 },
@@ -168,6 +186,7 @@ const Dashboard = () => {
               }}>
                 <PersonIcon sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }} />
               </Avatar>
+              {/* Welcome Message */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="h4" sx={{
                   fontWeight: 700,
@@ -185,6 +204,7 @@ const Dashboard = () => {
                   Manage your tasks efficiently and stay productive
                 </Typography>
               </Box>
+              {/* Logout Button */}
               <Button
                 variant="outlined"
                 color="error"
@@ -197,6 +217,7 @@ const Dashboard = () => {
           </Box>
         </Fade>
 
+        {/* Global Error Alert */}
         {error && (
           <Fade in timeout={500}>
             <Alert
@@ -212,10 +233,10 @@ const Dashboard = () => {
           </Fade>
         )}
 
-        {/* Row 2: Two Stat Cards */}
+        {/* Row 2: Statistics Section */}
         <Box sx={{ mb: { xs: 2, md: 3 }, width: '100%' }}>
           <Box sx={{
-            display: { xs: 'block', md: 'flex' },
+            display: { xs: 'block', md: 'flex' }, // Stack on mobile, row on desktop
             gap: { xs: 2, md: 3 },
             width: '100%',
             alignItems: 'stretch'
@@ -232,7 +253,7 @@ const Dashboard = () => {
               </Grow>
             </Box>
 
-            {/* Card 2: Quick Stats - 50% of header width */}
+            {/* Card 2: Quick Stats Cards - 50% of header width */}
             <Box sx={{
               width: { xs: '100%', md: 'calc(50% - 12px)' },
               flex: { md: '0 0 calc(50% - 12px)' },
@@ -272,6 +293,7 @@ const Dashboard = () => {
                       height: '100%',
                       minHeight: { xs: 'auto', sm: 160 }
                     }}>
+                      {/* Todo Stat */}
                       <Paper
                         sx={{
                           flex: 1,
@@ -301,6 +323,7 @@ const Dashboard = () => {
                           Todo
                         </Typography>
                       </Paper>
+                      {/* In Progress Stat */}
                       <Paper
                         sx={{
                           flex: 1,
@@ -330,6 +353,7 @@ const Dashboard = () => {
                           In Progress
                         </Typography>
                       </Paper>
+                      {/* Completed Stat */}
                       <Paper
                         sx={{
                           flex: 1,
@@ -361,6 +385,7 @@ const Dashboard = () => {
                       </Paper>
                     </Box>
                   </Box>
+                  {/* Total Tasks Footer */}
                   <Box sx={{ mt: 'auto', pt: 2, borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
                     <Typography variant="body2" color="text.secondary" align="center">
                       Total Tasks: <strong>{totalTasks}</strong>

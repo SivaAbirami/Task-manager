@@ -1,17 +1,23 @@
-import React from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Box, Paper, Typography } from '@mui/material';
-import { BarChart as BarChartIcon } from '@mui/icons-material';
+import React from 'react'; // Import React
+import { Pie } from 'react-chartjs-2'; // Import Pie chart component
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'; // Import Chart.js modules
+import { Box, Paper, Typography } from '@mui/material'; // Import UI components
+import { BarChart as BarChartIcon } from '@mui/icons-material'; // Import icon
 
+// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+// DashboardChart Component
+// Renders a pie chart showing task statistics
 const DashboardChart = ({ stats }) => {
+  // Define chart data
   const data = {
-    labels: ['Todo', 'In Progress', 'Completed'],
+    labels: ['Todo', 'In Progress', 'Completed'], // Labels for segments
     datasets: [
       {
+        // Data points from props
         data: [stats.Todo || 0, stats['In Progress'] || 0, stats.Completed || 0],
+        // Colors for each segment
         backgroundColor: [
           'rgba(255, 107, 107, 0.8)',
           'rgba(78, 205, 196, 0.8)',
@@ -28,12 +34,13 @@ const DashboardChart = ({ stats }) => {
     ],
   };
 
+  // Chart configuration options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: 'bottom', // Legend position
         labels: {
           padding: 15,
           font: {
@@ -54,6 +61,7 @@ const DashboardChart = ({ stats }) => {
         bodyFont: {
           size: 13
         },
+        // Custom tooltip label callback
         callbacks: {
           label: (context) => {
             const label = context.label || '';
@@ -72,13 +80,14 @@ const DashboardChart = ({ stats }) => {
     }
   };
 
+  // Calculate total tasks
   const totalTasks = Object.values(stats).reduce((a, b) => a + b, 0);
 
   return (
-    <Paper 
+    <Paper
       elevation={0}
-      sx={{ 
-        p: { xs: 2, md: 3 }, 
+      sx={{
+        p: { xs: 2, md: 3 },
         height: '100%',
         width: '100%',
         display: 'flex',
@@ -94,6 +103,7 @@ const DashboardChart = ({ stats }) => {
         }
       }}
     >
+      {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, md: 2 } }}>
         <BarChartIcon sx={{ mr: 1, color: 'primary.main', fontSize: { xs: '1.25rem', md: '1.5rem' } }} />
         <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: '1rem', md: '1.25rem' } }}>
@@ -103,6 +113,8 @@ const DashboardChart = ({ stats }) => {
       <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ mb: { xs: 1.5, md: 2 }, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
         Total Tasks: <strong>{totalTasks}</strong>
       </Typography>
+
+      {/* Chart Wrapper */}
       <Box sx={{ flexGrow: 1, height: { xs: 220, sm: 250, md: 280 }, display: 'flex', justifyContent: 'center', alignItems: 'center', mb: { xs: 1.5, md: 2 } }}>
         {totalTasks > 0 ? (
           <Pie data={data} options={options} />
@@ -117,16 +129,18 @@ const DashboardChart = ({ stats }) => {
           </Box>
         )}
       </Box>
+
+      {/* Legend / Stats Summary */}
       {totalTasks > 0 && (
-        <Box sx={{ 
-          mt: 2, 
+        <Box sx={{
+          mt: 2,
           pt: 2,
           borderTop: '1px solid rgba(0, 0, 0, 0.08)',
-          display: 'flex', 
-          justifyContent: 'space-around' 
+          display: 'flex',
+          justifyContent: 'space-around'
         }}>
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ 
+            <Typography variant="h6" sx={{
               fontWeight: 700,
               fontSize: { xs: '1rem', md: '1.25rem' },
               background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
@@ -140,7 +154,7 @@ const DashboardChart = ({ stats }) => {
             </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ 
+            <Typography variant="h6" sx={{
               fontWeight: 700,
               fontSize: { xs: '1rem', md: '1.25rem' },
               background: 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)',
@@ -154,7 +168,7 @@ const DashboardChart = ({ stats }) => {
             </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ 
+            <Typography variant="h6" sx={{
               fontWeight: 700,
               fontSize: { xs: '1rem', md: '1.25rem' },
               background: 'linear-gradient(135deg, #95e1d3 0%, #6bcf7f 100%)',
@@ -173,4 +187,4 @@ const DashboardChart = ({ stats }) => {
   );
 };
 
-export default DashboardChart;
+export default DashboardChart; // Export the component

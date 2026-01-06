@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'; // Import React dependencies
 import {
   Container,
   Paper,
@@ -9,13 +9,14 @@ import {
   Alert,
   CircularProgress,
   Link
-} from '@mui/material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { register, clearError } from '../store/authSlice';
+} from '@mui/material'; // Import UI components
+import { useFormik } from 'formik'; // Import form management hook
+import * as Yup from 'yup'; // Import validation library
+import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Import router components
+import { useDispatch, useSelector } from 'react-redux'; // Import Redux hooks
+import { register, clearError } from '../store/authSlice'; // Import register action and error clearer
 
+// Validation schema for registration form
 const validationSchema = Yup.object({
   name: Yup.string()
     .min(2, 'Name must be at least 2 characters')
@@ -28,32 +29,37 @@ const validationSchema = Yup.object({
     .required('Password is required')
 });
 
+// Register Page Component
 const Register = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Hook to dispatch actions
+  const navigate = useNavigate(); // Hook for navigation
+  // Select auth state from Redux store
   const { loading, error, token } = useSelector((state) => state.auth);
 
+  // Redirect to dashboard if already logged in (token exists)
   useEffect(() => {
     if (token) {
       navigate('/dashboard');
     }
   }, [token, navigate]);
 
+  // Clear errors on component unmount
   useEffect(() => {
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
+  // Formik configuration for form handling
   const formik = useFormik({
     initialValues: {
       name: '',
       email: '',
       password: ''
     },
-    validationSchema,
+    validationSchema, // Apply validation rules
     onSubmit: (values) => {
-      dispatch(register(values));
+      dispatch(register(values)); // Dispatch register action
     }
   });
 
@@ -61,6 +67,7 @@ const Register = () => {
     <Container maxWidth="sm">
       <Box sx={{ mt: 8, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4 }}>
+          {/* Header */}
           <Typography variant="h4" align="center" gutterBottom>
             Task Manager
           </Typography>
@@ -68,14 +75,17 @@ const Register = () => {
             Create an account to get started
           </Typography>
 
+          {/* Error Alert */}
           {error && (
             <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch(clearError())}>
               {error}
             </Alert>
           )}
 
+          {/* Registration Form */}
           <form onSubmit={formik.handleSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Name Input */}
               <TextField
                 fullWidth
                 id="name"
@@ -89,6 +99,7 @@ const Register = () => {
                 helperText={formik.touched.name && formik.errors.name}
               />
 
+              {/* Email Input */}
               <TextField
                 fullWidth
                 id="email"
@@ -102,6 +113,7 @@ const Register = () => {
                 helperText={formik.touched.email && formik.errors.email}
               />
 
+              {/* Password Input */}
               <TextField
                 fullWidth
                 id="password"
@@ -115,6 +127,7 @@ const Register = () => {
                 helperText={formik.touched.password && formik.errors.password}
               />
 
+              {/* Submit Button */}
               <Button
                 type="submit"
                 variant="contained"
@@ -122,9 +135,11 @@ const Register = () => {
                 disabled={loading}
                 fullWidth
               >
+                {/* Show spinner or text */}
                 {loading ? <CircularProgress size={24} /> : 'Sign Up'}
               </Button>
 
+              {/* Sign In Link */}
               <Typography align="center">
                 Already have an account?{' '}
                 <Link component={RouterLink} to="/login">
@@ -139,5 +154,5 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Register; // Export Register page
 
